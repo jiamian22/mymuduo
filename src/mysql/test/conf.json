@@ -2,7 +2,7 @@
     "ip":"127.0.0.1",
     "port":3306,
     "userName":"root",
-    "password":"200166_Shangjkld",
+    "password":"",
     "dbName":"test",
     "minSize":2,
     "maxSize":4,

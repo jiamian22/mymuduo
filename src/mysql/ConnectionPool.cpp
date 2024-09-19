@@ -4,6 +4,7 @@
 #include <thread>
 #include <assert.h>
 
+// 线程安全的懒汉式单例模式函数接口
 ConnectionPool* ConnectionPool::getConnectionPool()
 {
     static ConnectionPool pool;
@@ -13,15 +14,16 @@ ConnectionPool* ConnectionPool::getConnectionPool()
 ConnectionPool::ConnectionPool()
 {
     // assert();
+    // 加载配置文件
     parseJsonFile();
-
-    for (int i = 0; i < minSize_; ++i)
-    {
+    // 创建初始数量的连接
+    for (int i = 0; i < minSize_; ++i) {
         addConnection();
-        currentSize_++;
+        // ++currentSize_;
     }
-    // 开启新线程执行任务
+    // 开启新线程执行任务，作为连接的生产者
     std::thread producer(&ConnectionPool::produceConnection, this);
+    // 开启一个新的定时线程，扫描超过maxIdleTime时间的空闲连接，进行多余连接的回收
     std::thread recycler(&ConnectionPool::recycleConnection, this);
     // 设置线程分离，不阻塞在此处
     producer.detach();
@@ -31,12 +33,11 @@ ConnectionPool::ConnectionPool()
 ConnectionPool::~ConnectionPool()
 {
     // 释放队列里管理的MySQL连接资源
-    while (!connectionQueue_.empty())
-    {
+    while (!connectionQueue_.empty()) {
         MysqlConn* conn = connectionQueue_.front();
         connectionQueue_.pop();
         delete conn;
-        currentSize_--;
+        --currentSize_;
     }
 }
 
@@ -60,21 +61,19 @@ bool ConnectionPool::parseJsonFile()
 
 void ConnectionPool::produceConnection()
 {
-    while (true)
-    {
+    while (true) {
         // RALL手法封装的互斥锁，初始化即加锁，析构即解锁
         std::unique_lock<std::mutex> locker(mutex_);
-        while (!connectionQueue_.empty())
-        {
+        // while (!connectionQueue_.empty()) {
+        while (connectionQueue_.size() >= minSize_) {
             // 还有可用连接则不创建
             cond_.wait(locker);
         } 
         
-        // 还没达到连接最大限制
-        if (currentSize_ < maxSize_)
-        {
+        // 还没达到连接最大限制，继续创建新的连接
+        if (currentSize_ < maxSize_) {
             addConnection();
-            currentSize_++;
+            // ++currentSize_;
             // 唤醒被阻塞的线程
             cond_.notify_all();
         }       
@@ -84,24 +83,21 @@ void ConnectionPool::produceConnection()
 // 销毁多余的数据库连接
 void ConnectionPool::recycleConnection()
 {
-    while (true)
-    {
+    while (true) {
         // 周期性的做检测工作，每500毫秒（0.5s）执行一次
         std::this_thread::sleep_for(std::chrono::microseconds(500));
+
+        // 扫描整个队列，释放多余的连接
         std::lock_guard<std::mutex> locker(mutex_);
         // 连接数位于(maxSize, maxSize]时候，可能会有空闲连接等待太久
-        while (connectionQueue_.size() > minSize_)
-        {
+        while (connectionQueue_.size() > minSize_) {
             MysqlConn* conn = connectionQueue_.front();
-            if (conn->getAliveTime() >= maxIdleTime_)
-            {
+            if (conn->getAliveTime() >= maxIdleTime_) {
                 // 存在时间超过设定值则销毁
                 connectionQueue_.pop();
-                delete conn;
-                currentSize_--;
-            }
-            else
-            {
+                delete conn;  // 调用~MysqlConn()释放连接
+                --currentSize_;
+            } else {
                 // 按照先进先出顺序，前面的没有超过后面的肯定也没有
                 break;
             }
@@ -113,26 +109,23 @@ void ConnectionPool::addConnection()
 {
     MysqlConn* conn = new MysqlConn;
     conn->connect(user_, passwd_, dbName_, ip_, port_);
-    conn->refreshAliveTime();    // 刷新起始的空闲时间点
-    connectionQueue_.push(conn); // 记录新连接
-    currentSize_++;
+    conn->refreshAliveTime();     // 刷新起始的空闲时间点
+    connectionQueue_.push(conn);  // 记录新连接
+    ++currentSize_;
 }
 
 // 获取连接
 std::shared_ptr<MysqlConn> ConnectionPool::getConnection()
 {
     std::unique_lock<std::mutex> locker(mutex_);
-    if (connectionQueue_.empty())
-    {
-        while (connectionQueue_.empty())
-        {
+    if (connectionQueue_.empty()) {  // 该if也可省略
+        while (connectionQueue_.empty()) {
             // 如果为空，需要阻塞一段时间，等待新的可用连接
-            if (std::cv_status::timeout == cond_.wait_for(locker, std::chrono::milliseconds(timeout_)))
-            {
+            if (std::cv_status::timeout == cond_.wait_for(locker, std::chrono::milliseconds(timeout_))) {
                 // std::cv_status::timeout 表示超时
-                if (connectionQueue_.empty())
-                {
+                if (connectionQueue_.empty()) {
                     continue;
+                    // return nullptr;  // 超时也可以直接返回
                 }
             }
         }
@@ -140,15 +133,19 @@ std::shared_ptr<MysqlConn> ConnectionPool::getConnection()
     
     // 有可用的连接
     // 如何还回数据库连接？
-    // 使用共享智能指针并规定其删除器
-    // 规定销毁后调用删除器，在互斥的情况下更新空闲时间并加入数据库连接池
+    /*
+     * shared ptr智能指针析构时，会把connection资源直接delete掉，相当于调用connection的析构函数, connection就被close掉了。
+     * 这里需要自定义shared_ptr的释放资源的方式，把connection直接归还到queue当中
+    */
+    // 使用共享智能指针并规定其删除器，规定销毁后调用删除器，在互斥的情况下更新空闲时间并加入数据库连接池
     std::shared_ptr<MysqlConn> connptr(connectionQueue_.front(), 
         [this](MysqlConn* conn) {
+            // 这里是在服务器应用线程中调用的，所以一定要考虑队列的线程安全操作
             std::lock_guard<std::mutex> locker(mutex_);
             conn->refreshAliveTime();
             connectionQueue_.push(conn);
         });
     connectionQueue_.pop();
-    cond_.notify_all();
+    cond_.notify_all();  // 消费完连接以后，通知生产者线程检查一下，如果队列为空了，赶紧生产连接
     return connptr;
 }

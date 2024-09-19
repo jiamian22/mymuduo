@@ -219,7 +219,7 @@ mymuduo_BINARY_DIR:STATIC=/home/jlurobot/桌面/test_C++/C++_project/mymuduo/bui
 mymuduo_IS_TOP_LEVEL:STATIC=ON
 
 //Dependencies for the target
-mymuduo_LIB_DEPENDS:STATIC=general;pthread;
+mymuduo_LIB_DEPENDS:STATIC=general;pthread;general;mysqlclient;
 
 //Value Computed by CMake
 mymuduo_SOURCE_DIR:STATIC=/home/jlurobot/桌面/test_C++/C++_project/mymuduo
@@ -329,7 +329,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=4
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=5
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

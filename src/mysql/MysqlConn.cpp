@@ -21,7 +21,7 @@ MysqlConn::~MysqlConn()
 }
 
 // 连接数据库
-bool MysqlConn::connect(const std::string& user, const std::string& passwd, const std::string dbName, const std::string& ip, const unsigned int& port)
+bool MysqlConn::connect(const std::string& user, const std::string& passwd, const std::string& dbName, const std::string& ip, const unsigned short& port)
 {
     // 尝试与运行在主机上的MySQL数据库引擎建立连接
     MYSQL* ptr = mysql_real_connect(conn_, ip.c_str(), user.c_str(), passwd.c_str(), dbName.c_str(), port, nullptr, 0);
@@ -31,8 +31,7 @@ bool MysqlConn::connect(const std::string& user, const std::string& passwd, cons
 // 更新数据库：包括 insert update delete 操作
 bool MysqlConn::update(const std::string& sql)
 {
-    if (mysql_query(conn_, sql.c_str()))
-    {
+    if (mysql_query(conn_, sql.c_str())) {  // 查询成功，返回0。出现错误，返回非0值
         return false;
     }
     return true;
@@ -43,8 +42,7 @@ bool MysqlConn::query(const std::string& sql)
 {
     // 查询前确保结果集为空
     freeResult();
-    if (mysql_query(conn_, sql.c_str()))
-    {
+    if (mysql_query(conn_, sql.c_str())) {
         return false;
     }
     // 储存结果集(这是一个二重指针)
@@ -55,11 +53,11 @@ bool MysqlConn::query(const std::string& sql)
 // 遍历查询得到的结果集
 bool MysqlConn::next()
 {
-    if (result_ != nullptr)
-    {
+    if (result_ != nullptr) {
+        // 说明：当 mysql_fetch_row( ) 执行后返回一个二级指针，也可以理解为指针字符串数组，
+        // 此函数执行完后会返回下一个字符串数组的地址，如果下一个字符串数组地址不存在，则返回NULL。
         row_ = mysql_fetch_row(result_);
-        if (row_ != nullptr)
-        {
+        if (row_ != nullptr) {
             return true;
         }
     }
@@ -69,9 +67,8 @@ bool MysqlConn::next()
 // 得到结果集中的字段值
 std::string MysqlConn::value(int index)
 {
-    int rowCount = mysql_num_fields(result_);
-    if (index >= rowCount || index < 0)
-    {
+    int rowCount = mysql_num_fields(result_);  // 列的数量
+    if (index >= rowCount || index < 0) {
         // 获取字段索引不合法，返回空字符串
         return std::string();
     }
@@ -102,18 +99,18 @@ bool MysqlConn::rollbock()
     return mysql_rollback(conn_);
 }
 
-// 刷新起始的空闲时间点
+// 刷新连接起始的空闲时间点
 void MysqlConn::refreshAliveTime()
 {
     // 获取时间戳
-    m_alivetime = std::chrono::steady_clock::now();
+    aliveTime_ = std::chrono::steady_clock::now();
 }
 
 // 计算连接存活的总时长
 long long MysqlConn::getAliveTime()
 {
     // 获取时间段（当前时间戳 - 创建时间戳）
-    std::chrono::nanoseconds res = std::chrono::steady_clock::now() - m_alivetime;
+    std::chrono::nanoseconds res = std::chrono::steady_clock::now() - aliveTime_;
     // 纳秒 -> 毫秒，高精度向低精度转换需要duration_cast
     std::chrono::milliseconds millsec = std::chrono::duration_cast<std::chrono::milliseconds>(res);
     // 返回毫秒数量
@@ -123,8 +120,7 @@ long long MysqlConn::getAliveTime()
 // 释放结果集
 void MysqlConn::freeResult()
 {
-    if (result_)
-    {
+    if (result_) {
         mysql_free_result(result_);
         result_ = nullptr;
     }

@@ -213,6 +213,19 @@ AsyncLoggingTest/fast:
 	$(MAKE) $(MAKESILENT) -f src/logger/test/CMakeFiles/AsyncLoggingTest.dir/build.make src/logger/test/CMakeFiles/AsyncLoggingTest.dir/build
 .PHONY : AsyncLoggingTest/fast
 
+#=============================================================================
+# Target rules for targets named MysqlPoolTest
+
+# Build rule for target.
+MysqlPoolTest: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 MysqlPoolTest
+.PHONY : MysqlPoolTest
+
+# fast build rule for target.
+MysqlPoolTest/fast:
+	$(MAKE) $(MAKESILENT) -f src/mysql/test/CMakeFiles/MysqlPoolTest.dir/build.make src/mysql/test/CMakeFiles/MysqlPoolTest.dir/build
+.PHONY : MysqlPoolTest/fast
+
 src/base/CurrentThread.o: src/base/CurrentThread.cpp.o
 .PHONY : src/base/CurrentThread.o
 
@@ -428,6 +441,54 @@ src/logger/Logging.s: src/logger/Logging.cpp.s
 src/logger/Logging.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mymuduo.dir/build.make CMakeFiles/mymuduo.dir/src/logger/Logging.cpp.s
 .PHONY : src/logger/Logging.cpp.s
+
+src/mysql/ConnectionPool.o: src/mysql/ConnectionPool.cpp.o
+.PHONY : src/mysql/ConnectionPool.o
+
+# target to build an object file
+src/mysql/ConnectionPool.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mymuduo.dir/build.make CMakeFiles/mymuduo.dir/src/mysql/ConnectionPool.cpp.o
+.PHONY : src/mysql/ConnectionPool.cpp.o
+
+src/mysql/ConnectionPool.i: src/mysql/ConnectionPool.cpp.i
+.PHONY : src/mysql/ConnectionPool.i
+
+# target to preprocess a source file
+src/mysql/ConnectionPool.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mymuduo.dir/build.make CMakeFiles/mymuduo.dir/src/mysql/ConnectionPool.cpp.i
+.PHONY : src/mysql/ConnectionPool.cpp.i
+
+src/mysql/ConnectionPool.s: src/mysql/ConnectionPool.cpp.s
+.PHONY : src/mysql/ConnectionPool.s
+
+# target to generate assembly for a file
+src/mysql/ConnectionPool.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mymuduo.dir/build.make CMakeFiles/mymuduo.dir/src/mysql/ConnectionPool.cpp.s
+.PHONY : src/mysql/ConnectionPool.cpp.s
+
+src/mysql/MysqlConn.o: src/mysql/MysqlConn.cpp.o
+.PHONY : src/mysql/MysqlConn.o
+
+# target to build an object file
+src/mysql/MysqlConn.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mymuduo.dir/build.make CMakeFiles/mymuduo.dir/src/mysql/MysqlConn.cpp.o
+.PHONY : src/mysql/MysqlConn.cpp.o
+
+src/mysql/MysqlConn.i: src/mysql/MysqlConn.cpp.i
+.PHONY : src/mysql/MysqlConn.i
+
+# target to preprocess a source file
+src/mysql/MysqlConn.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mymuduo.dir/build.make CMakeFiles/mymuduo.dir/src/mysql/MysqlConn.cpp.i
+.PHONY : src/mysql/MysqlConn.cpp.i
+
+src/mysql/MysqlConn.s: src/mysql/MysqlConn.cpp.s
+.PHONY : src/mysql/MysqlConn.s
+
+# target to generate assembly for a file
+src/mysql/MysqlConn.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mymuduo.dir/build.make CMakeFiles/mymuduo.dir/src/mysql/MysqlConn.cpp.s
+.PHONY : src/mysql/MysqlConn.cpp.s
 
 src/net/Acceptor.o: src/net/Acceptor.cpp.o
 .PHONY : src/net/Acceptor.o
@@ -802,6 +863,7 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... AsyncLoggingTest"
+	@echo "... MysqlPoolTest"
 	@echo "... ThreadPoolTest"
 	@echo "... echoServer"
 	@echo "... mymuduo"
@@ -832,6 +894,12 @@ help:
 	@echo "... src/logger/Logging.o"
 	@echo "... src/logger/Logging.i"
 	@echo "... src/logger/Logging.s"
+	@echo "... src/mysql/ConnectionPool.o"
+	@echo "... src/mysql/ConnectionPool.i"
+	@echo "... src/mysql/ConnectionPool.s"
+	@echo "... src/mysql/MysqlConn.o"
+	@echo "... src/mysql/MysqlConn.i"
+	@echo "... src/mysql/MysqlConn.s"
 	@echo "... src/net/Acceptor.o"
 	@echo "... src/net/Acceptor.i"
 	@echo "... src/net/Acceptor.s"

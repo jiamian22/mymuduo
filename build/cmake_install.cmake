@@ -51,6 +51,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/home/jlurobot/桌面/test_C++/C++_project/mymuduo/build/example/cmake_install.cmake")
   include("/home/jlurobot/桌面/test_C++/C++_project/mymuduo/build/src/base/test/cmake_install.cmake")
   include("/home/jlurobot/桌面/test_C++/C++_project/mymuduo/build/src/logger/test/cmake_install.cmake")
+  include("/home/jlurobot/桌面/test_C++/C++_project/mymuduo/build/src/mysql/test/cmake_install.cmake")
 
 endif()
 

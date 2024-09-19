@@ -31,6 +31,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/home/jlurobot/桌面/test_C++/C++_project/mymuduo/example/CMakeLists.txt"
   "/home/jlurobot/桌面/test_C++/C++_project/mymuduo/src/base/test/CMakeLists.txt"
   "/home/jlurobot/桌面/test_C++/C++_project/mymuduo/src/logger/test/CMakeLists.txt"
+  "/home/jlurobot/桌面/test_C++/C++_project/mymuduo/src/mysql/test/CMakeLists.txt"
   )
 
 # The corresponding makefile is:
@@ -45,6 +46,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "example/CMakeFiles/CMakeDirectoryInformation.cmake"
   "src/base/test/CMakeFiles/CMakeDirectoryInformation.cmake"
   "src/logger/test/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "src/mysql/test/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
@@ -53,4 +55,5 @@ set(CMAKE_DEPEND_INFO_FILES
   "example/CMakeFiles/echoServer.dir/DependInfo.cmake"
   "src/base/test/CMakeFiles/ThreadPoolTest.dir/DependInfo.cmake"
   "src/logger/test/CMakeFiles/AsyncLoggingTest.dir/DependInfo.cmake"
+  "src/mysql/test/CMakeFiles/MysqlPoolTest.dir/DependInfo.cmake"
   )

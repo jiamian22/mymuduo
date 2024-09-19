@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = -Dmymuduo_EXPORTS
 
-CXX_INCLUDES = -I/home/jlurobot/桌面/test_C++/C++_project/mymuduo/src/base -I/home/jlurobot/桌面/test_C++/C++_project/mymuduo/src/logger -I/home/jlurobot/桌面/test_C++/C++_project/mymuduo/src/net -I/home/jlurobot/桌面/test_C++/C++_project/mymuduo/src/net/poller -I/home/jlurobot/桌面/test_C++/C++_project/mymuduo/src/timer
+CXX_INCLUDES = -I/home/jlurobot/桌面/test_C++/C++_project/mymuduo/src/base -I/home/jlurobot/桌面/test_C++/C++_project/mymuduo/src/logger -I/home/jlurobot/桌面/test_C++/C++_project/mymuduo/src/net -I/home/jlurobot/桌面/test_C++/C++_project/mymuduo/src/net/poller -I/home/jlurobot/桌面/test_C++/C++_project/mymuduo/src/timer -I/home/jlurobot/桌面/test_C++/C++_project/mymuduo/src/mysql
 
 CXX_FLAGS = -fPIC
 
